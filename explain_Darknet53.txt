@@ -1,0 +1,22 @@
+II. Darknet 53 process
+1. Kiến trúc YOLOv3 được xây dựng dựa trên mô hình trích xuất đặc trưng Darknet-53. Để phát hiện các đối tượng, 53 lớp được xếp chồng lên nhau, tạo thành một kiến trúc hoàn toàn dựa trên việc tích chập với tổng cộng 106 lớp.
+
+2. Các đối tượng được xác định tại ba lớp trong kiến trúc này: lớp thứ 82, lớp thứ 94 và lớp thứ 106.
+
+3. Mỗi lớp trong kiến trúc 53 lớp này được theo sau bởi lớp chuẩn hóa theo batch và sử dụng hàm kích hoạt Leaky ReLU.
+
+4. Ý tưởng cơ bản của kiến trúc YOLOv3 là chia ảnh thành các ô có kích thước SxS. Mỗi ô lưới chịu trách nhiệm dự đoán cho một đối tượng.
+
+5. Mỗi ô lưới có năm tham số để xác định vị trí của hộp giới hạn. Các tham số này là (x, y, w, h, confidence) trong đó x và y đại diện cho tọa độ tâm của hộp, w và h được sử dụng để chỉ định chiều rộng và chiều cao của hộp, độ tin cậy biểu thị sự có mặt của đối tượng. Ngoài ra, ảnh cũng có xác suất lớp tương ứng với mỗi ô lưới.
+
+6. Do xác suất được đánh giá cho mỗi ô lưới, có khả năng thuật toán có thể dự đoán nhiều hộp giới hạn cho cùng một đối tượng. Để tránh tình huống này, phương pháp Non-Max Suppression được sử dụng.
+
+7. Đầu vào của lớp đầu tiên của mô hình là một batch chứa n hình ảnh có kích thước (n, 416, 416, 3) trong đó (416, 416) đại diện cho chiều rộng và chiều cao của ảnh và 3 là số kênh: Đỏ, Lục, Lam.
+
+8. Kiến trúc của mô hình YOLOv3 không chứa bất kỳ loại lớp pooling nào và đối với các lớp tích chập, bước nhảy là 2 để giảm kích thước các bản đồ đặc trưng.
+
+9.Nhiều bộ lọc được tích chập trong một lớp tích chập để tạo ra nhiều bản đồ đặc trưng.
+
+10. Mô hình YOLOv3 thực hiện dự đoán tại ba vị trí khác nhau trong mạng. Ba vị trí khác nhau này nằm ở các lớp thứ 82, thứ 94 và thứ 106. Bước nhảy cho ba lớp này lần lượt là 32, 16 và 8.
+
+11. Do đó, đầu ra của lớp thứ 82 là 13x13 (416/32 = 13) và nó chịu trách nhiệm phát hiện các đối tượng lớn vì bước nhảy là 32. Tương tự, đối với lớp thứ 94, đầu ra có kích thước 26x26 (416/16 = 26) vì bước nhảy là 16 và nó chịu trách nhiệm phát hiện các đối tượng trung bình. Đối với lớp cuối cùng (lớp thứ 106), bước nhảy là 8 và nó phát hiện các đối tượng lớn. Do đó, đầu ra có kích thước 52x52 (416/8 = 52).
